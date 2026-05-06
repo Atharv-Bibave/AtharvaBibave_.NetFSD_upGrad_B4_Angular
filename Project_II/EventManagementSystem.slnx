@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="EventManagementSystem.AppUI/EventManagementSystem.AppUI.csproj" />
+  <Project Path="EventManagementSystem.DataAccessLayer/EventManagementSystem.DataAccessLayer.csproj" />
+</Solution>
