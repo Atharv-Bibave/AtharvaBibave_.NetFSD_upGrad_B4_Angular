@@ -1,0 +1,48 @@
+@model EventManagementSystem.AppUI.Models.LoginViewModel
+
+@{
+    ViewData["Title"] = "Sign In";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-4">
+
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white text-center">
+                <h5 class="mb-0">&#128272; Sign In to EMS</h5>
+                <small class="opacity-75">upGrad Virtual Event Management System</small>
+            </div>
+            <div class="card-body">
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 @(ViewData.ModelState.IsValid ? "d-none" : "")"></div>
+
+                <form method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label fw-semibold">Email Address <span class="text-danger">*</span></label>
+                        <input asp-for="Email" class="form-control" placeholder="your@email.com" autocomplete="email" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label fw-semibold">Password <span class="text-danger">*</span></label>
+                        <input asp-for="Password" class="form-control" placeholder="Your password" autocomplete="current-password" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 fw-bold">Sign In</button>
+                </form>
+
+                <p class="mt-3 text-center text-muted small">
+                    Don't have an account? <a href="/Participant/Register">Create one here</a>
+                </p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

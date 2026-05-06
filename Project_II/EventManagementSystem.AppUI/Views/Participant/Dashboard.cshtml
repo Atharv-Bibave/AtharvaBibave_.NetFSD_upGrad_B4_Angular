@@ -1,0 +1,127 @@
+@model IEnumerable<EventManagementSystem.DataAccessLayer.Models.ParticipantEventDetails>
+
+@{
+    ViewData["Title"] = "My Dashboard";
+    int totalEvents    = Model.Count();
+    int attendedCount  = Model.Count(x => x.IsAttended);
+    int upcomingCount  = Model.Count(x => x.Event?.EventDate.Date >= DateTime.Today);
+}
+
+<div class="mb-4">
+    <h2 class="mb-0">👋 Welcome back, <strong>@ViewBag.UserName</strong></h2>
+    <p class="text-muted">Here's a summary of your activity on EMS.</p>
+</div>
+
+@* Summary stat cards *@
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-4">
+        <div class="card text-white bg-primary h-100">
+            <div class="card-body text-center">
+                <div class="fs-2 fw-bold">@totalEvents</div>
+                <div class="small">Registered Events</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4">
+        <div class="card text-white bg-success h-100">
+            <div class="card-body text-center">
+                <div class="fs-2 fw-bold">@attendedCount</div>
+                <div class="small">Attended</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4">
+        <div class="card text-white bg-info h-100">
+            <div class="card-body text-center">
+                <div class="fs-2 fw-bold">@upcomingCount</div>
+                <div class="small">Upcoming</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Quick-access action cards *@
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card h-100 border-primary">
+            <div class="card-body">
+                <h5 class="card-title">📅 My Registered Events</h5>
+                <p class="card-text text-muted small">
+                    View all events you've registered for, check attendance, and browse event sessions.
+                </p>
+                <a asp-controller="Participant" asp-action="RegisteredEvents"
+                   class="btn btn-primary btn-sm">View Registered Events</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-info">
+            <div class="card-body">
+                <h5 class="card-title">📋 My Sessions</h5>
+                <p class="card-text text-muted small">
+                    See all sessions scheduled across your registered events and join live sessions.
+                </p>
+                <a asp-controller="Participant" asp-action="MySessions"
+                   class="btn btn-info btn-sm">View My Sessions</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-success">
+            <div class="card-body">
+                <h5 class="card-title">🔍 Browse Events</h5>
+                <p class="card-text text-muted small">
+                    Explore new events and sessions available on the platform and register for more.
+                </p>
+                <a href="/" class="btn btn-success btn-sm">Browse Events</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Recent registrations preview — last 3 *@
+@if (Model.Any())
+{
+    <h5 class="mb-3 text-muted">Recent Registrations</h5>
+    <div class="list-group mb-3">
+        @foreach (var item in Model.OrderByDescending(x => x.Event?.EventDate).Take(3))
+        {
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>@item.Event?.EventName</strong>
+                    <span class="badge bg-secondary ms-2">@item.Event?.EventCategory</span>
+                    <div class="text-muted small">📅 @item.Event?.EventDate.ToString("dd MMM yyyy")</div>
+                </div>
+                <div class="d-flex gap-2 align-items-center">
+                    @if (item.IsAttended)
+                    {
+                        <span class="badge bg-success">✔ Attended</span>
+                    }
+                    else if (item.Event?.EventDate.Date <= DateTime.Today)
+                    {
+                        <span class="badge bg-warning text-dark">Not Attended</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-info text-dark">Upcoming</span>
+                    }
+                    <a asp-controller="Session" asp-action="ViewSessions" asp-route-eventId="@item.EventId"
+                       class="btn btn-sm btn-outline-secondary">Sessions</a>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (totalEvents > 3)
+    {
+        <a asp-controller="Participant" asp-action="RegisteredEvents"
+           class="btn btn-outline-primary btn-sm">View all @totalEvents registered events →</a>
+    }
+}
+else
+{
+    <div class="alert alert-info">
+        You haven't registered for any events yet.
+        <a href="/" class="alert-link">Browse events</a> to get started.
+    </div>
+}

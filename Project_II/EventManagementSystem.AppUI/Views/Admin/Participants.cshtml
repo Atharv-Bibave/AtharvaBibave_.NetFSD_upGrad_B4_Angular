@@ -1,0 +1,92 @@
+@model IEnumerable<EventManagementSystem.DataAccessLayer.Models.ParticipantEventDetails>
+
+@{
+    ViewData["Title"] = "Participant Registrations";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h2 class="mb-1">👥 Participant Registrations</h2>
+        @if (ViewBag.FilterEventName != null)
+        {
+            <p class="text-muted mb-0">Filtered by: <strong>@ViewBag.FilterEventName</strong></p>
+        }
+    </div>
+    <a asp-action="Dashboard" class="btn btn-outline-secondary btn-sm">← Back to Dashboard</a>
+</div>
+
+<form method="get" class="row g-2 mb-4">
+    <div class="col-auto">
+        <select name="eventId" class="form-select form-select-sm" onchange="this.form.submit()">
+            <option value="">— All Events —</option>
+            @foreach (var ev in (IEnumerable<EventManagementSystem.DataAccessLayer.Models.EventDetails>)ViewBag.Events)
+            {
+                <option value="@ev.EventId" selected="@(ViewBag.FilterEventId?.ToString() == ev.EventId.ToString())">
+                    @ev.EventName
+                </option>
+            }
+        </select>
+    </div>
+    @if (ViewBag.FilterEventId != null)
+    {
+        <div class="col-auto">
+            <a asp-action="Participants" class="btn btn-sm btn-outline-danger">✕ Clear Filter</a>
+        </div>
+    }
+</form>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No registrations found.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Participant</th>
+                    <th>Email</th>
+                    <th>Event</th>
+                    <th class="text-center">Attended</th>
+                    <th class="text-center">Toggle</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int i = 1; }
+                @foreach (var r in Model)
+                {
+                    <tr>
+                        <td>@(i++)</td>
+                        <td>@(r.User?.UserName ?? "—")</td>
+                        <td>@r.ParticipantEmailId</td>
+                        <td>@(r.Event?.EventName ?? "—")</td>
+                        <td class="text-center">
+                            @if (r.IsAttended)
+                            {
+                                <span class="badge bg-success">✔ Yes</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">✘ No</span>
+                            }
+                        </td>
+                        <td class="text-center">
+                            <form method="post" asp-action="UpdateAttendance">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@r.Id" />
+                                <input type="hidden" name="isAttended" value="@(!r.IsAttended ? "true" : "false")" />
+                                <input type="hidden" name="filterEventId" value="@ViewBag.FilterEventId" />
+                                <button type="submit" class="btn btn-sm @(r.IsAttended ? "btn-outline-secondary" : "btn-outline-success")">
+                                    @(r.IsAttended ? "Mark Absent" : "Mark Present")
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <p class="text-muted small">Total: @Model.Count() registration(s)</p>
+}

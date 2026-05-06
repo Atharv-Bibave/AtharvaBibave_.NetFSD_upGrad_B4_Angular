@@ -1,0 +1,55 @@
+@model EventManagementSystem.DataAccessLayer.Models.SessionInfo
+
+@{
+    ViewData["Title"] = "Assign Speaker";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Assign Speaker to Session</h2>
+
+<div class="card mb-4 border-info">
+    <div class="card-body">
+        <h5 class="card-title text-info mb-1">Session: @Model.SessionTitle</h5>
+        <p class="text-muted mb-0 small">
+            Event: <strong>@Model.Event?.EventName</strong> &nbsp;|&nbsp;
+            🕐 @Model.SessionStart.ToString("dd MMM yyyy HH:mm") – @Model.SessionEnd.ToString("HH:mm")
+        </p>
+        <p class="mt-1 mb-0 small">
+            Current Speaker:
+            @if (Model.Speaker != null)
+            {
+                <span class="badge bg-info text-dark">@Model.Speaker.SpeakerName</span>
+            }
+            else
+            {
+                <span class="text-muted">Not assigned</span>
+            }
+        </p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-5">
+        <form method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="sessionId" value="@Model.SessionId" />
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Select Speaker</label>
+                <select name="speakerId" class="form-select">
+                    <option value="">-- Remove / No Speaker --</option>
+                    @foreach (var s in ViewBag.Speakers)
+                    {
+                        <option value="@s.SpeakerId" selected="@(Model.SpeakerId == s.SpeakerId)">
+                            @s.SpeakerName
+                        </option>
+                    }
+                </select>
+                <div class="form-text text-muted">Select "No Speaker" to unassign the current speaker.</div>
+            </div>
+
+            <button type="submit" class="btn btn-success">Assign Speaker</button>
+            <a asp-controller="Session" asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,81 @@
+@model IEnumerable<EventManagementSystem.DataAccessLayer.Models.SessionInfo>
+
+@{
+    ViewData["Title"] = "Sessions - " + ViewBag.EventName;
+    Layout = "~/Views/Shared/_ParticipantLayout.cshtml";
+}
+
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+        <li class="breadcrumb-item">
+            <a asp-controller="Home" asp-action="Details" asp-route-id="@ViewBag.EventId">@ViewBag.EventName</a>
+        </li>
+        <li class="breadcrumb-item active">Sessions</li>
+    </ol>
+</nav>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">📋 Sessions</h2>
+        <p class="text-muted mb-0">Event: <strong>@ViewBag.EventName</strong></p>
+    </div>
+    <a asp-controller="Home" asp-action="Details" asp-route-id="@ViewBag.EventId"
+       class="btn btn-outline-secondary btn-sm">← Back to Event</a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No sessions have been scheduled for this event yet. Please check back later.</div>
+}
+else
+{
+    <div class="row">
+        @foreach (var s in Model)
+        {
+            var sessionUrl = s.SessionUrl ?? "";
+            if (!string.IsNullOrEmpty(sessionUrl)
+                && !sessionUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+                && !sessionUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+            {
+                sessionUrl = "https://" + sessionUrl;
+            }
+
+            <div class="col-md-6 mb-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">@s.SessionTitle</h5>
+                        @if (s.Speaker != null)
+                        {
+                            <p class="mb-1">
+                                <span class="badge bg-info text-dark">🎤 @s.Speaker.SpeakerName</span>
+                            </p>
+                        }
+                        else
+                        {
+                            <p class="mb-1"><span class="badge bg-light text-secondary border">Speaker TBA</span></p>
+                        }
+                        <p class="text-muted small mb-1">
+                            🕐 @s.SessionStart.ToString("dd MMM yyyy, HH:mm") – @s.SessionEnd.ToString("HH:mm")
+                        </p>
+                        @if (!string.IsNullOrEmpty(s.Description))
+                        {
+                            <p class="card-text small text-muted">@s.Description</p>
+                        }
+                    </div>
+                    <div class="card-footer d-flex gap-2">
+                        @if (!string.IsNullOrEmpty(sessionUrl))
+                        {
+                            <a href="@sessionUrl" target="_blank" rel="noopener noreferrer"
+                               class="btn btn-sm btn-outline-primary flex-grow-1">🔗 Join Session</a>
+                        }
+                        <a asp-controller="Session" asp-action="Details" asp-route-id="@s.SessionId"
+                           class="btn btn-sm btn-outline-secondary @(string.IsNullOrEmpty(sessionUrl) ? "w-100" : "")">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

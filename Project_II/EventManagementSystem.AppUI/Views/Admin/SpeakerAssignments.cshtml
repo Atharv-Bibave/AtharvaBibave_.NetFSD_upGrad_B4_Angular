@@ -1,0 +1,117 @@
+@model Dictionary<EventManagementSystem.DataAccessLayer.Models.SpeakersDetails, List<EventManagementSystem.DataAccessLayer.Models.SessionInfo>>
+
+@{
+    ViewData["Title"] = "Speaker Assignments";
+    var unassigned = ViewBag.UnassignedSessions as List<EventManagementSystem.DataAccessLayer.Models.SessionInfo> ?? new();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>🎤 Speaker Assignments</h2>
+    <div class="d-flex gap-2">
+        <a asp-controller="Speaker" asp-action="Create" class="btn btn-success btn-sm">+ Add Speaker</a>
+        <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-outline-secondary btn-sm">← Dashboard</a>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        No speakers found.
+        <a asp-controller="Speaker" asp-action="Create">Add a speaker</a> to get started.
+    </div>
+}
+else
+{
+    @foreach (var kvp in Model)
+    {
+        var speaker  = kvp.Key;
+        var sessions = kvp.Value;
+
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <strong class="me-2">🎤 @speaker.SpeakerName</strong>
+                    <span class="badge bg-info text-dark">@sessions.Count session(s)</span>
+                </div>
+                <div class="d-flex gap-2">
+                    <a asp-controller="Speaker" asp-action="Edit" asp-route-id="@speaker.SpeakerId"
+                       class="btn btn-sm btn-outline-warning">Edit</a>
+                    <a asp-controller="Speaker" asp-action="Delete" asp-route-id="@speaker.SpeakerId"
+                       class="btn btn-sm btn-outline-danger">Remove</a>
+                </div>
+            </div>
+            @if (sessions.Any())
+            {
+                <div class="card-body p-0">
+                    <table class="table table-sm table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-3">Session</th>
+                                <th>Event</th>
+                                <th>Start</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var s in sessions.OrderBy(x => x.SessionStart))
+                            {
+                                <tr>
+                                    <td class="ps-3">@s.SessionTitle</td>
+                                    <td class="small">@(s.Event?.EventName ?? "—")</td>
+                                    <td class="small">@s.SessionStart.ToString("dd MMM, HH:mm")</td>
+                                    <td>
+                                        <a asp-controller="Session" asp-action="AssignSpeaker" asp-route-id="@s.SessionId"
+                                           class="btn btn-sm btn-outline-secondary"
+                                           style="font-size:0.75rem; padding:2px 8px;">Reassign</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="card-body text-muted small fst-italic py-2 ps-3">
+                    No sessions assigned to this speaker yet.
+                </div>
+            }
+        </div>
+    }
+}
+
+@if (unassigned.Any())
+{
+    <div class="card border-warning mt-4 shadow-sm">
+        <div class="card-header bg-warning text-dark">
+            <strong>⚠️ Unassigned Sessions (@unassigned.Count)</strong>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-sm table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-3">Session</th>
+                        <th>Event</th>
+                        <th>Start</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var s in unassigned.OrderBy(x => x.SessionStart))
+                    {
+                        <tr>
+                            <td class="ps-3">@s.SessionTitle</td>
+                            <td class="small">@(s.Event?.EventName ?? "—")</td>
+                            <td class="small">@s.SessionStart.ToString("dd MMM, HH:mm")</td>
+                            <td>
+                                <a asp-controller="Session" asp-action="AssignSpeaker" asp-route-id="@s.SessionId"
+                                   class="btn btn-sm btn-outline-primary"
+                                   style="font-size:0.75rem; padding:2px 8px;">Assign Speaker</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

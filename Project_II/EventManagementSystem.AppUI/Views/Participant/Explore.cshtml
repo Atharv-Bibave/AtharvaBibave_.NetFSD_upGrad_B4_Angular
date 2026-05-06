@@ -1,0 +1,81 @@
+@model IEnumerable<EventManagementSystem.DataAccessLayer.Models.EventDetails>
+
+@{
+    ViewData["Title"] = "Explore Events";
+    bool isLoggedIn       = ViewBag.IsLoggedIn ?? false;
+    string? selectedCat   = ViewBag.SelectedCat as string;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h2 class="mb-0">🔍 Explore Events</h2>
+        <p class="text-muted small mb-0">Browse all active events and sessions — no login required.</p>
+    </div>
+    @if (!isLoggedIn)
+    {
+        <a asp-controller="Participant" asp-action="Login" class="btn btn-outline-primary btn-sm">
+            Login to Register
+        </a>
+    }
+</div>
+
+@* Category filter bar *@
+<div class="mb-3">
+    <a asp-controller="Participant" asp-action="Explore"
+       class="btn btn-sm @(selectedCat == null ? "btn-dark" : "btn-outline-dark") me-1">All</a>
+    @foreach (var cat in ViewBag.Categories)
+    {
+        <a asp-controller="Participant" asp-action="Explore" asp-route-category="@cat"
+           class="btn btn-sm @(selectedCat == cat ? "btn-primary" : "btn-outline-primary") me-1">@cat</a>
+    }
+</div>
+
+<hr />
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        No active events found
+        @if (selectedCat != null) { <text> in the <strong>@selectedCat</strong> category</text> }.
+        <a asp-controller="Participant" asp-action="Explore" class="alert-link">View all events</a>.
+    </div>
+}
+else
+{
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <span class="badge bg-primary mb-2">@item.EventCategory</span>
+                        <h5 class="card-title">@item.EventName</h5>
+                        <p class="card-text text-muted small">📅 @item.EventDate.ToShortDateString()</p>
+                        <p class="card-text small">@item.Description</p>
+                    </div>
+                    <div class="card-footer d-flex flex-wrap gap-1">
+                        <a asp-controller="Home" asp-action="Details" asp-route-id="@item.EventId"
+                           class="btn btn-outline-secondary btn-sm flex-fill">🔍 Details</a>
+
+                        <a asp-controller="Session" asp-action="ViewSessions" asp-route-eventId="@item.EventId"
+                           class="btn btn-outline-info btn-sm flex-fill">📋 Sessions</a>
+
+                        @if (isLoggedIn)
+                        {
+                            <form method="post" asp-controller="Participant" asp-action="RegisterEvent" class="flex-fill">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="eventId" value="@item.EventId" />
+                                <button type="submit" class="btn btn-success btn-sm w-100">✅ Register</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a asp-controller="Participant" asp-action="Login"
+                               class="btn btn-outline-secondary btn-sm flex-fill">🔒 Login to Register</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

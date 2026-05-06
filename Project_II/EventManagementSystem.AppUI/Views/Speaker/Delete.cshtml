@@ -1,0 +1,37 @@
+@model EventManagementSystem.DataAccessLayer.Models.SpeakersDetails
+
+@{
+    ViewData["Title"] = "Delete Speaker";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card border-danger shadow">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">⚠️ Confirm Delete</h4>
+            </div>
+            <div class="card-body">
+                <p class="lead">Are you sure you want to remove this speaker?</p>
+                <table class="table table-bordered">
+                    <tr><th>Speaker Name</th><td>@Model.SpeakerName</td></tr>
+                </table>
+
+                @if ((int)ViewBag.AssignedSessionCount > 0)
+                {
+                    <div class="alert alert-warning mb-0">
+                        ⚠️ This speaker is assigned to
+                        <strong>@ViewBag.AssignedSessionCount session(s)</strong>.
+                        Deleting will unassign them from those sessions (sessions are not deleted).
+                    </div>
+                }
+            </div>
+            <div class="card-footer d-flex gap-2 justify-content-end">
+                <a asp-controller="Speaker" asp-action="Index" class="btn btn-secondary">Cancel</a>
+                <form method="post" asp-controller="Speaker" asp-action="Delete" asp-route-id="@Model.SpeakerId">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">🗑️ Yes, Remove Speaker</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

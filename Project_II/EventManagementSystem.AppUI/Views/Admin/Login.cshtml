@@ -1,0 +1,51 @@
+@model EventManagementSystem.AppUI.Models.LoginViewModel
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Admin Login";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-4">
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white text-center">
+                <h5 class="mb-0">🔐 Admin Login</h5>
+                <small class="opacity-75">upGrad Virtual Event Management System</small>
+            </div>
+            <div class="card-body">
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 @(ViewData.ModelState.IsValid ? "d-none" : "")"></div>
+
+                <form method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label fw-semibold">Admin Email <span class="text-danger">*</span></label>
+                        <input asp-for="Email" class="form-control" placeholder="admin@ems.com" autocomplete="email" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label fw-semibold">Password <span class="text-danger">*</span></label>
+                        <input asp-for="Password" class="form-control" placeholder="Password" autocomplete="current-password" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-dark w-100 fw-bold">Login as Admin</button>
+                </form>
+
+                <p class="mt-3 text-center text-muted small">
+                    Default credentials: <code>admin@ems.com</code> / <code>Admin@123</code>
+                </p>
+            </div>
+        </div>
+
+        <div class="text-center mt-3">
+            <a href="/" class="text-muted small">← Back to Public Site</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

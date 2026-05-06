@@ -1,0 +1,66 @@
+@model EventManagementSystem.AppUI.Models.EventViewModel
+
+@{
+    ViewData["Title"] = "Edit Event";
+    var categories = new[] { "Tech & Innovations", "Industrial Events", "Business & Entrepreneurship", "Health & Wellness", "Education & Research" };
+    var minDate = DateTime.Today.ToString("yyyy-MM-dd");
+}
+
+<h2>Edit Event</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <form method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="EventId" />
+            <input type="hidden" asp-for="IsEditMode" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 @(ViewData.ModelState.IsValid ? "d-none" : "")"></div>
+
+            <div class="mb-3">
+                <label asp-for="EventName" class="form-label fw-semibold">Event Name <span class="text-danger">*</span></label>
+                <input asp-for="EventName" class="form-control" />
+                <span asp-validation-for="EventName" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="EventCategory" class="form-label fw-semibold">Category <span class="text-danger">*</span></label>
+                <select asp-for="EventCategory" class="form-select">
+                    <option value="">-- Select Category --</option>
+                    @foreach (var cat in categories)
+                    {
+                        <option value="@cat" selected="@(Model.EventCategory == cat)">@cat</option>
+                    }
+                </select>
+                <span asp-validation-for="EventCategory" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="EventDate" class="form-label fw-semibold">Event Date <span class="text-danger">*</span></label>
+                <input asp-for="EventDate" type="date" class="form-control" min="@minDate" />
+                <div class="form-text text-muted">Event date cannot be set to a past date.</div>
+                <span asp-validation-for="EventDate" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label fw-semibold">Description</label>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Status" class="form-label fw-semibold">Status <span class="text-danger">*</span></label>
+                <select asp-for="Status" class="form-select">
+                    <option value="Active">Active</option>
+                    <option value="In-Active">In-Active</option>
+                </select>
+                <span asp-validation-for="Status" class="text-danger small"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Update Event</button>
+            <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

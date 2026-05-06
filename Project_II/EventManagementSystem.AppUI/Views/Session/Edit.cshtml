@@ -1,0 +1,135 @@
+@model EventManagementSystem.AppUI.Models.SessionViewModel
+
+@{
+    ViewData["Title"] = "Edit Session";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Edit Session</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <form method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="SessionId" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 @(ViewData.ModelState.IsValid ? "d-none" : "")"></div>
+
+            <div class="mb-3">
+                <label asp-for="SessionTitle" class="form-label fw-semibold">Session Title <span class="text-danger">*</span></label>
+                <input asp-for="SessionTitle" class="form-control" />
+                <span asp-validation-for="SessionTitle" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="EventId" class="form-label fw-semibold">Event <span class="text-danger">*</span></label>
+                <select asp-for="EventId" class="form-select">
+                    <option value="">-- Select Event --</option>
+                    @foreach (var e in ViewBag.Events)
+                    {
+                        <option value="@e.EventId">@e.EventName</option>
+                    }
+                </select>
+                <span asp-validation-for="EventId" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="SpeakerId" class="form-label fw-semibold">Speaker <span class="text-muted small">(Optional)</span></label>
+                <select asp-for="SpeakerId" class="form-select">
+                    <option value="">-- No Speaker --</option>
+                    @foreach (var s in ViewBag.Speakers)
+                    {
+                        <option value="@s.SpeakerId">@s.SpeakerName</option>
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label fw-semibold">Description</label>
+                <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="SessionStart" class="form-label fw-semibold">Session Start <span class="text-danger">*</span></label>
+                <input asp-for="SessionStart" type="datetime-local" class="form-control" id="SessionStart" />
+                <span asp-validation-for="SessionStart" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="SessionEnd" class="form-label fw-semibold">Session End <span class="text-danger">*</span></label>
+                <input asp-for="SessionEnd" type="datetime-local" class="form-control" id="SessionEnd" />
+                <span asp-validation-for="SessionEnd" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="SessionUrl" class="form-label fw-semibold">Session URL</label>
+                <input asp-for="SessionUrl" class="form-control" placeholder="https://..." />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Update Session</button>
+            <a asp-controller="Session" asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        var startInput = document.getElementById('SessionStart');
+        var endInput   = document.getElementById('SessionEnd');
+        var startError = startInput.nextElementSibling;
+        var endError   = endInput.nextElementSibling;
+
+        function getNowLocal() {
+            var now = new Date();
+            now.setSeconds(0, 0);
+            var pad = n => String(n).padStart(2, '0');
+            return now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate())
+                 + 'T' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+        }
+
+        var minNow = getNowLocal();
+        startInput.min = minNow;
+        endInput.min   = minNow;
+
+        startInput.addEventListener('change', function () {
+            if (this.value) {
+                endInput.min = this.value;
+                if (endInput.value && endInput.value <= this.value) {
+                    endInput.value = '';
+                }
+            }
+        });
+
+        document.querySelector('form').addEventListener('submit', function (e) {
+            var start  = startInput.value;
+            var end    = endInput.value;
+            var nowNow = getNowLocal();
+            var valid  = true;
+
+            startInput.classList.remove('is-invalid');
+            endInput.classList.remove('is-invalid');
+            if (startError) startError.textContent = '';
+            if (endError)   endError.textContent   = '';
+
+            if (start && start < nowNow) {
+                e.preventDefault();
+                startInput.classList.add('is-invalid');
+                if (startError) startError.textContent = 'Session Start must be a future date and time.';
+                valid = false;
+            }
+
+            if (end && end < nowNow) {
+                e.preventDefault();
+                endInput.classList.add('is-invalid');
+                if (endError) endError.textContent = 'Session End must be a future date and time.';
+                valid = false;
+            }
+
+            if (valid && start && end && new Date(start) >= new Date(end)) {
+                e.preventDefault();
+                endInput.classList.add('is-invalid');
+                if (endError) endError.textContent = 'Session End must be after Session Start.';
+            }
+        });
+    </script>
+}

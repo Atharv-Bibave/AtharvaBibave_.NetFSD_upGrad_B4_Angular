@@ -1,0 +1,93 @@
+@model EventManagementSystem.DataAccessLayer.Models.EventDetails
+
+@{
+    ViewData["Title"] = Model.EventName;
+    bool isLoggedIn = Context.Session.GetString("UserEmail") != null;
+}
+
+<div class="mb-3">
+    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-sm">← Back to Events</a>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            <span class="badge bg-primary me-2">@Model.EventCategory</span>
+            <span class="badge @(Model.Status == "Active" ? "bg-success" : "bg-secondary")">@Model.Status</span>
+        </div>
+        <span class="text-muted small">📅 @Model.EventDate.ToString("dddd, dd MMMM yyyy")</span>
+    </div>
+    <div class="card-body">
+        <h2 class="card-title">@Model.EventName</h2>
+
+        @if (!string.IsNullOrEmpty(Model.Description))
+        {
+            <p class="card-text lead">@Model.Description</p>
+        }
+        else
+        {
+            <p class="text-muted fst-italic">No description provided.</p>
+        }
+    </div>
+    <div class="card-footer d-flex gap-2">
+        <a asp-controller="Session" asp-action="ViewSessions" asp-route-eventId="@Model.EventId"
+           class="btn btn-outline-info">
+            📋 View Sessions
+        </a>
+        @if (Model.Status == "Active")
+        {
+            if (isLoggedIn)
+            {
+                @* BUG FIX: Use asp-controller/asp-action instead of hardcoded /Participant/RegisterEvent *@
+                <form method="post" asp-controller="Participant" asp-action="RegisterEvent" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="eventId" value="@Model.EventId" />
+                    <button type="submit" class="btn btn-success">
+                        ✅ Register for this Event
+                    </button>
+                </form>
+            }
+            else
+            {
+                <a asp-controller="Participant" asp-action="Login" class="btn btn-outline-secondary">
+                    🔒 Login to Register
+                </a>
+            }
+        }
+        else
+        {
+            <span class="btn btn-secondary disabled">Registration Closed</span>
+        }
+    </div>
+</div>
+
+@if (Model.Sessions != null && Model.Sessions.Any())
+{
+    <h4 class="mb-3">Sessions</h4>
+    <div class="list-group">
+        @foreach (var session in Model.Sessions.OrderBy(s => s.SessionStart))
+        {
+            <div class="list-group-item">
+                <div class="d-flex justify-content-between">
+                    <strong>@session.SessionTitle</strong>
+                    <span class="text-muted small">
+                        @session.SessionStart.ToString("t") – @session.SessionEnd.ToString("t")
+                    </span>
+                </div>
+                @if (session.Speaker != null)
+                {
+                    <span class="badge bg-info text-dark">🎤 @session.Speaker.SpeakerName</span>
+                }
+                @if (!string.IsNullOrEmpty(session.Description))
+                {
+                    <p class="mb-0 text-muted small mt-1">@session.Description</p>
+                }
+                <div class="mt-2">
+                    @* FIX: Link to session details from public event details page *@
+                    <a asp-controller="Session" asp-action="Details" asp-route-id="@session.SessionId"
+                       class="btn btn-sm btn-outline-secondary">View Session Details</a>
+                </div>
+            </div>
+        }
+    </div>
+}

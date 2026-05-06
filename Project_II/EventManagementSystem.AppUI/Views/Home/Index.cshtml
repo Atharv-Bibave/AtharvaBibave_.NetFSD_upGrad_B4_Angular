@@ -1,0 +1,75 @@
+@model IEnumerable<EventManagementSystem.DataAccessLayer.Models.EventDetails>
+
+@{
+    ViewData["Title"] = "Home";
+    bool isLoggedIn = Context.Session.GetString("UserEmail") != null;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Upcoming Events</h2>
+    @if (!isLoggedIn)
+    {
+        <a asp-controller="Participant" asp-action="Explore" class="btn btn-outline-primary btn-sm">Explore Events</a>
+    }
+</div>
+
+<div class="mb-3">
+    <a href="@Url.Action("Index", "Home")" class="btn btn-sm btn-dark me-1">All</a>
+    @foreach (var cat in ViewBag.Categories)
+    {
+        <a href="@Url.Action("Index", "Home", new { category = cat })" class="btn btn-sm btn-outline-primary me-1">@cat</a>
+    }
+</div>
+
+<hr />
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No active events at the moment. Please check back later.</div>
+}
+else
+{
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <span class="badge bg-primary mb-2">@item.EventCategory</span>
+                        <h5 class="card-title">@item.EventName</h5>
+                        <p class="card-text text-muted small">📅 @item.EventDate.ToShortDateString()</p>
+                        <p class="card-text small">@item.Description</p>
+                    </div>
+                    <div class="card-footer d-flex flex-wrap gap-1">
+                        @* BUG FIX: Use asp-route tag helpers — not hardcoded strings *@
+                        <a asp-controller="Home" asp-action="Details" asp-route-id="@item.EventId"
+                           class="btn btn-outline-secondary btn-sm flex-fill">
+                            🔍 Details
+                        </a>
+                        <a asp-controller="Session" asp-action="ViewSessions" asp-route-eventId="@item.EventId"
+                           class="btn btn-outline-info btn-sm flex-fill">
+                            📋 Sessions
+                        </a>
+                        @if (isLoggedIn)
+                        {
+                            <form method="post" asp-controller="Participant" asp-action="RegisterEvent" class="flex-fill">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="eventId" value="@item.EventId" />
+                                <button type="submit" class="btn btn-success btn-sm w-100">
+                                    ✅ Register
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a asp-controller="Participant" asp-action="Login"
+                               class="btn btn-outline-secondary btn-sm flex-fill">
+                                🔒 Login to Register
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

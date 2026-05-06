@@ -1,0 +1,33 @@
+@model EventManagementSystem.DataAccessLayer.Models.SessionInfo
+
+@{
+    ViewData["Title"] = "Delete Session";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card border-danger shadow">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">⚠️ Confirm Delete</h4>
+            </div>
+            <div class="card-body">
+                <p class="lead">Are you sure you want to delete this session? This action <strong>cannot be undone</strong>.</p>
+                <table class="table table-bordered">
+                    <tr><th>Title</th><td>@Model.SessionTitle</td></tr>
+                    <tr><th>Event</th><td>@(Model.Event?.EventName ?? "—")</td></tr>
+                    <tr><th>Speaker</th><td>@(Model.Speaker?.SpeakerName ?? "Unassigned")</td></tr>
+                    <tr><th>Start</th><td>@Model.SessionStart.ToString("g")</td></tr>
+                    <tr><th>End</th><td>@Model.SessionEnd.ToString("g")</td></tr>
+                </table>
+            </div>
+            <div class="card-footer d-flex gap-2 justify-content-end">
+                <a asp-controller="Session" asp-action="Index" class="btn btn-secondary">Cancel</a>
+                <form method="post" asp-controller="Session" asp-action="Delete" asp-route-id="@Model.SessionId">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">🗑️ Yes, Delete Session</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

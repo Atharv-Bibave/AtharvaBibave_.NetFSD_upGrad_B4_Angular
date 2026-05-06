@@ -1,0 +1,80 @@
+@model IEnumerable<EventManagementSystem.DataAccessLayer.Models.ParticipantEventDetails>
+
+@{
+    ViewData["Title"] = "My Registered Events";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-0">📅 My Registered Events</h2>
+        @if (ViewBag.UserName != null)
+        {
+            <p class="text-muted mb-0">Registered events for <strong>@ViewBag.UserName</strong></p>
+        }
+    </div>
+    <a asp-controller="Participant" asp-action="Dashboard" class="btn btn-outline-secondary btn-sm">← Dashboard</a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        <strong>No registered events yet.</strong>
+        <a href="/" class="alert-link">Browse events</a> to get started.
+    </div>
+}
+else
+{
+    <div class="row">
+        @foreach (var item in Model.OrderByDescending(x => x.Event?.EventDate))
+        {
+            var eventDate = item.Event?.EventDate ?? DateTime.MinValue;
+            var isPast    = eventDate.Date < DateTime.Today;
+            var isToday   = eventDate.Date == DateTime.Today;
+
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 shadow-sm @(item.IsAttended ? "border-success" : "")">
+                    <div class="card-header d-flex justify-content-between align-items-center py-2">
+                        <span class="badge bg-primary">@(item.Event?.EventCategory ?? "—")</span>
+                        <span class="text-muted small">📅 @eventDate.ToString("dd MMM yyyy")</span>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title mb-1">@(item.Event?.EventName ?? "—")</h5>
+
+                        @if (item.IsAttended)
+                        {
+                            <span class="badge bg-success mb-2">✔ Attended</span>
+                        }
+                        else if (isPast || isToday)
+                        {
+                            <span class="badge bg-warning text-dark mb-2">Not Attended</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-info text-dark mb-2">Upcoming</span>
+                        }
+                    </div>
+                    <div class="card-footer d-flex gap-2 flex-wrap">
+                        <a asp-controller="Session" asp-action="ViewSessions" asp-route-eventId="@item.EventId"
+                           class="btn btn-sm btn-outline-info flex-fill">📋 View Sessions</a>
+
+                        <a asp-controller="Home" asp-action="Details" asp-route-id="@item.EventId"
+                           class="btn btn-sm btn-outline-secondary flex-fill">🔍 Event Details</a>
+
+                        @if (isPast || isToday)
+                        {
+                            <form method="post" asp-controller="Participant" asp-action="MarkAttendance" class="flex-fill">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="registrationId" value="@item.Id" />
+                                <input type="hidden" name="isAttended" value="@(!item.IsAttended ? "true" : "false")" />
+                                <button type="submit"
+                                        class="btn btn-sm w-100 @(item.IsAttended ? "btn-outline-success" : "btn-success")">
+                                    @(item.IsAttended ? "✔ Attended (Undo)" : "Mark as Attended")
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

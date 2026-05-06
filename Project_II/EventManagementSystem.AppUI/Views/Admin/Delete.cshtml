@@ -1,0 +1,37 @@
+@model EventManagementSystem.DataAccessLayer.Models.EventDetails
+
+@{
+    ViewData["Title"] = "Delete Event";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card border-danger shadow">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">⚠️ Confirm Delete</h4>
+            </div>
+            <div class="card-body">
+                <p class="lead">Are you sure you want to delete the following event? This action <strong>cannot be undone</strong>.</p>
+                <table class="table table-bordered">
+                    <tr><th>Name</th><td>@Model.EventName</td></tr>
+                    <tr><th>Category</th><td>@Model.EventCategory</td></tr>
+                    <tr><th>Date</th><td>@Model.EventDate.ToShortDateString()</td></tr>
+                    <tr><th>Status</th><td>
+                        <span class="badge @(Model.Status == "Active" ? "bg-success" : "bg-secondary")">@Model.Status</span>
+                    </td></tr>
+                    @if (!string.IsNullOrEmpty(Model.Description))
+                    {
+                        <tr><th>Description</th><td>@Model.Description</td></tr>
+                    }
+                </table>
+            </div>
+            <div class="card-footer d-flex gap-2 justify-content-end">
+                <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">Cancel</a>
+                <form method="post" asp-controller="Admin" asp-action="Delete" asp-route-id="@Model.EventId">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">🗑️ Yes, Delete Event</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
