@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Event Registration</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body onload="loadEventDetails()">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="index.html">Upgrad Events</a>
+
+        <button
+          class="navbar-toggler"
+          data-bs-toggle="collapse"
+          data-bs-target="#menu"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="menu">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="login.html">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="events.html">Events</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="contact.html">Contact Us</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-5">
+      <h3 class="mb-4">Event Registration</h3>
+
+      <div class="card p-4 mb-4">
+        <h5>Event Details</h5>
+        <p><b>ID:</b> <span id="eventId"></span></p>
+        <p><b>Name:</b> <span id="eventName"></span></p>
+        <p><b>Category:</b> <span id="eventCategory"></span></p>
+        <p><b>Date:</b> <span id="eventDate"></span></p>
+        <p><b>Time:</b> <span id="eventTime"></span></p>
+      </div>
+
+      <div class="card p-4">
+        <h5>Participant Details</h5>
+
+        <form id="registrationForm" onsubmit="registerParticipant(event)">
+          <div class="mb-3">
+            <label for="firstName" class="form-label">First Name</label>
+            <input
+              type="text"
+              id="firstName"
+              class="form-control"
+              placeholder="First Name"
+              pattern="[A-Za-z ]+"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="lastName" class="form-label">Last Name</label>
+            <input
+              type="text"
+              id="lastName"
+              class="form-control"
+              placeholder="Last Name"
+              pattern="[A-Za-z ]+"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input
+              type="email"
+              id="email"
+              class="form-control"
+              placeholder="Email"
+              required
+            />
+          </div>
+
+          <button class="btn btn-success">Register</button>
+        </form>
+      </div>
+    </div>
+    <script src="js/register.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

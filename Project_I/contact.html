@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact Us</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="index.html">Upgrad Events</a>
+
+        <button
+          class="navbar-toggler"
+          data-bs-toggle="collapse"
+          data-bs-target="#menu"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="menu">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="login.html">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="events.html">Events</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="contact.html">Contact Us</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-5">
+      <h3 class="text-center mb-4">Contact Us</h3>
+
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="card p-4">
+            <form id="contactForm" onsubmit="submitQuery(event)">
+              <div class="mb-3">
+                <label for="contactName" class="form-label">Name</label>
+                <input
+                  type="text"
+                  id="contactName"
+                  class="form-control"
+                  placeholder="Enter your name"
+                  pattern="[A-Za-z ]+"
+                  required
+                />
+              </div>
+
+              <div class="mb-3">
+                <label for="contactEmail" class="form-label">Email</label>
+                <input
+                  type="email"
+                  id="contactEmail"
+                  class="form-control"
+                  placeholder="Enter your email"
+                  required
+                />
+              </div>
+
+              <div class="mb-3">
+                <label for="contactDesc" class="form-label">Description</label>
+                <textarea
+                  id="contactDesc"
+                  class="form-control"
+                  rows="4"
+                  placeholder="Enter your query"
+                  required
+                ></textarea>
+              </div>
+
+              <button class="btn btn-primary w-100">Submit Query</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/contact.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

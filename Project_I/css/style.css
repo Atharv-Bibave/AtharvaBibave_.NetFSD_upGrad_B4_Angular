@@ -1,0 +1,57 @@
+body {
+  background-color: #f5f6fa;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.navbar-brand {
+  font-weight: 600;
+}
+
+h2,
+h3,
+h4 {
+  font-weight: 600;
+}
+
+.card {
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+}
+
+.card h5 {
+  font-weight: 600;
+}
+
+.card p {
+  font-size: 14px;
+}
+
+.btn-primary,
+.btn-danger {
+  width: 20%;
+}
+
+input,
+select,
+textarea {
+  border-radius: 6px !important;
+}
+
+.container {
+  max-width: 1000px;
+}
+
+#searchText {
+  max-width: 400px;
+}
+
+@media (max-width: 768px) {
+  .navbar-nav {
+    text-align: center;
+  }
+}
