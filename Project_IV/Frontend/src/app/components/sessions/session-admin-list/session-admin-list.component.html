@@ -1,0 +1,75 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h2 class="mb-0">Manage Sessions</h2>
+    <small *ngIf="filterEventName" class="text-muted">
+      Filtered by event: <strong>{{ filterEventName }}</strong>
+      <a (click)="clearFilter()" class="ms-2 text-danger small" style="cursor:pointer">Clear filter</a>
+    </small>
+  </div>
+  <a routerLink="/admin/sessions/new" class="btn btn-primary">+ Add Session</a>
+</div>
+
+<div *ngIf="successMsg" class="alert alert-success alert-dismissible fade show">
+  ✅ {{ successMsg }}<button type="button" class="btn-close" (click)="successMsg=''"></button>
+</div>
+<div *ngIf="errorMsg" class="alert alert-danger alert-dismissible fade show">
+  ❌ {{ errorMsg }}<button type="button" class="btn-close" (click)="errorMsg=''"></button>
+</div>
+
+<!-- Event filter -->
+<div class="row g-2 mb-3">
+  <div class="col-auto">
+    <select class="form-select form-select-sm" [(ngModel)]="filterEventId" (change)="onFilterChange()">
+      <option value="">— All Events —</option>
+      <option *ngFor="let ev of events" [value]="ev.eventId">{{ ev.eventName }}</option>
+    </select>
+  </div>
+</div>
+
+<div *ngIf="isLoading" class="spinner-container">
+  <div class="spinner-border text-primary"></div>
+</div>
+
+<div *ngIf="!isLoading && displayedSessions.length === 0" class="alert alert-info">
+  No sessions found. <a routerLink="/admin/sessions/new">Add the first session.</a>
+</div>
+
+<table *ngIf="!isLoading && displayedSessions.length > 0"
+       class="table table-bordered table-hover align-middle">
+  <thead class="table-dark">
+    <tr>
+      <th>Title</th>
+      <th>Event</th>
+      <th>Speaker</th>
+      <th>Start</th>
+      <th>End</th>
+      <th>URL</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let s of displayedSessions">
+      <td>{{ s.sessionTitle }}</td>
+      <td class="small">{{ getEventName(s.eventId) }}</td>
+      <td>
+        <span *ngIf="s.speakerName" class="badge bg-info text-dark">🎤 {{ s.speakerName }}</span>
+        <span *ngIf="!s.speakerName" class="text-muted small">Not assigned</span>
+      </td>
+      <td class="small">{{ s.sessionStart | date:'dd MMM yyyy HH:mm' }}</td>
+      <td class="small">{{ s.sessionEnd | date:'dd MMM yyyy HH:mm' }}</td>
+      <td>
+        <a *ngIf="s.sessionUrl" [href]="s.sessionUrl" target="_blank"
+           class="btn btn-sm btn-outline-info">🔗 Link</a>
+        <span *ngIf="!s.sessionUrl" class="text-muted small">—</span>
+      </td>
+      <td class="text-nowrap">
+        <a [routerLink]="['/admin/sessions/edit', s.sessionId]"
+           class="btn btn-sm btn-warning">Edit</a>
+        <a [routerLink]="['/admin/sessions/edit', s.sessionId]"
+           class="btn btn-sm btn-info ms-1">Assign Speaker</a>
+        <button class="btn btn-sm btn-danger ms-1"
+                (click)="delete(s.sessionId)">Delete</button>
+      </td>
+    </tr>
+  </tbody>
+</table>

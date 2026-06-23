@@ -1,0 +1,209 @@
+<h2 class="mb-4">Admin Dashboard</h2>
+
+<div *ngIf="errorMsg" class="alert alert-danger">❌ {{ errorMsg }}</div>
+<div *ngIf="isLoading" class="spinner-container">
+  <div class="spinner-border text-primary" style="width:3rem;height:3rem;"></div>
+</div>
+
+<ng-container *ngIf="!isLoading">
+
+  <!-- Stat Cards -->
+  <div class="row mb-4 g-3">
+    <div class="col-6 col-md-4 col-lg-2">
+      <a routerLink="/events" class="text-decoration-none">
+        <div class="card text-white bg-primary h-100" style="cursor:pointer">
+          <div class="card-body text-center">
+            <div class="fs-2 fw-bold">{{ totalEvents }}</div>
+            <div class="small">Total Events</div>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+      <a routerLink="/events" class="text-decoration-none">
+        <div class="card text-white bg-success h-100" style="cursor:pointer">
+          <div class="card-body text-center">
+            <div class="fs-2 fw-bold">{{ activeEvents }}</div>
+            <div class="small">Active</div>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+      <a routerLink="/events" class="text-decoration-none">
+        <div class="card text-white bg-secondary h-100" style="cursor:pointer">
+          <div class="card-body text-center">
+            <div class="fs-2 fw-bold">{{ inactiveEvents }}</div>
+            <div class="small">Inactive</div>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+      <a routerLink="/admin/speakers" class="text-decoration-none">
+        <div class="card text-white bg-info h-100" style="cursor:pointer">
+          <div class="card-body text-center">
+            <div class="fs-2 fw-bold">{{ totalSpeakers }}</div>
+            <div class="small">Speakers</div>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+      <a routerLink="/admin/participants" class="text-decoration-none">
+        <div class="card text-white bg-warning h-100" style="cursor:pointer">
+          <div class="card-body text-center">
+            <div class="fs-2 fw-bold">{{ totalUsers }}</div>
+            <div class="small">Users</div>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+      <a routerLink="/admin/categories" class="text-decoration-none">
+        <div class="card text-white bg-danger h-100" style="cursor:pointer">
+          <div class="card-body text-center">
+            <div class="fs-2 fw-bold">{{ totalCategories }}</div>
+            <div class="small">Categories</div>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Quick Action Cards -->
+  <div class="row mb-4 g-3">
+    <div class="col-md-4">
+      <div class="card h-100 border-primary">
+        <div class="card-body">
+          <h5 class="card-title">📅 Manage Events</h5>
+          <p class="card-text text-muted small">Add, edit, toggle status, and delete events.</p>
+          <a routerLink="/events" class="btn btn-primary btn-sm">Go to Events</a>
+          <a routerLink="/admin/events/new" class="btn btn-outline-primary btn-sm ms-1">+ New Event</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 border-info">
+        <div class="card-body">
+          <h5 class="card-title">📋 Manage Sessions</h5>
+          <p class="card-text text-muted small">Add sessions under events and assign speakers.</p>
+          <a routerLink="/admin/sessions" class="btn btn-info btn-sm">Go to Sessions</a>
+          <a routerLink="/admin/sessions/new" class="btn btn-outline-info btn-sm ms-1">+ New Session</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 border-warning">
+        <div class="card-body">
+          <h5 class="card-title">🎤 Manage Speakers</h5>
+          <p class="card-text text-muted small">Add or remove speakers and assign them to sessions.</p>
+          <a routerLink="/admin/speakers" class="btn btn-warning btn-sm">Go to Speakers</a>
+          <a routerLink="/admin/speaker-assignments" class="btn btn-outline-warning btn-sm ms-1">Assignments</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 border-secondary">
+        <div class="card-body">
+          <h5 class="card-title">👥 Participants</h5>
+          <p class="card-text text-muted small">View participant registrations and filter by event.</p>
+          <a routerLink="/admin/participants" class="btn btn-secondary btn-sm">View Participants</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 border-danger">
+        <div class="card-body">
+          <h5 class="card-title">🏷️ Categories</h5>
+          <p class="card-text text-muted small">Add or remove event categories.</p>
+          <a routerLink="/admin/categories" class="btn btn-danger btn-sm">Manage Categories</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Events + Inline Sessions -->
+  <div *ngIf="eventsWithSessions.length === 0" class="alert alert-info">
+    No events found. <a routerLink="/admin/events/new">Create your first event</a>.
+  </div>
+
+  <div *ngFor="let item of eventsWithSessions" class="card mb-3 shadow-sm">
+
+    <!-- Event header -->
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <div>
+        <strong>{{ item.event.eventName }}</strong>
+        <span class="badge bg-secondary ms-2">{{ item.event.eventCategory }}</span>
+        <span class="badge ms-1"
+              [class.bg-success]="item.event.status==='Active'"
+              [class.bg-secondary]="item.event.status!=='Active'">
+          {{ item.event.status }}
+        </span>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <span class="text-muted small">📅 {{ item.event.eventDate | date:'dd/MM/yyyy' }}</span>
+        <a [routerLink]="['/events', item.event.eventId]"
+           class="btn btn-sm btn-outline-secondary">Details</a>
+        <a [routerLink]="['/admin/events/edit', item.event.eventId]"
+           class="btn btn-sm btn-outline-warning">Edit</a>
+        <a [routerLink]="['/events', item.event.eventId]"
+           class="btn btn-sm btn-outline-info">Sessions</a>
+      </div>
+    </div>
+
+    <!-- Event description -->
+    <div *ngIf="item.event.description" class="px-3 pt-2 text-muted small">
+      {{ item.event.description }}
+    </div>
+
+    <!-- Sessions sub-section -->
+    <div class="card-body p-0">
+
+      <!-- No sessions -->
+      <div *ngIf="item.sessions.length === 0"
+           class="px-3 py-2 text-muted small fst-italic">
+        No sessions yet.
+        <a [routerLink]="['/admin/sessions/new']"
+           [queryParams]="{eventId: item.event.eventId}"
+           class="ms-1">Add a session</a>
+      </div>
+
+      <!-- Sessions table — sessions are visually subordinate to event -->
+      <div *ngIf="item.sessions.length > 0">
+        <!-- Sessions sub-header to visually separate from event -->
+        <div class="px-3 py-1 bg-light border-top border-bottom">
+          <span class="text-muted small fw-semibold text-uppercase"
+                style="letter-spacing:0.05em;font-size:0.72rem;">
+            Sessions ({{ item.sessions.length }})
+          </span>
+        </div>
+        <table class="table table-sm table-hover mb-0">
+          <thead style="background-color:#f8f9fa;">
+            <tr class="text-muted" style="font-size:0.82rem;font-weight:600;">
+              <th class="ps-3" style="font-weight:600;">Session Title</th>
+              <th style="font-weight:600;">Start</th>
+              <th style="font-weight:600;">End</th>
+              <th style="font-weight:600;">Speaker</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let s of item.sessions" style="font-size:0.88rem;">
+              <td class="ps-3">{{ s.sessionTitle }}</td>
+              <td class="text-muted">{{ s.sessionStart | date:'dd MMM, HH:mm' }}</td>
+              <td class="text-muted">{{ s.sessionEnd | date:'dd MMM, HH:mm' }}</td>
+              <td>
+                <span *ngIf="s.speakerName"
+                      class="badge bg-info text-dark">🎤 {{ s.speakerName }}</span>
+                <span *ngIf="!s.speakerName"
+                      class="badge bg-light text-secondary border">Unassigned</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+</ng-container>

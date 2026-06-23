@@ -1,0 +1,18 @@
+/* ── EMS Global Styles — matching MVC Project II UI ── */
+body {
+  background-color: #f8f9fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.card { transition: box-shadow 0.2s ease; }
+.card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1) !important; }
+.table-hover tbody tr:hover { background-color: #f0f4ff; }
+.badge { font-size: 0.8rem; }
+.alert-dismissible { animation: fadeIn 0.3s ease; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.spinner-container {
+  display: flex; justify-content: center;
+  align-items: center; min-height: 180px;
+}

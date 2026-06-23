@@ -1,0 +1,45 @@
+<!-- ── Admin Navbar (dark) ── -->
+<nav *ngIf="isAdmin" class="navbar navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" routerLink="/admin/dashboard">⚙️ EMS Admin</a>
+    <div class="d-flex flex-wrap gap-1">
+      <a class="btn btn-outline-light btn-sm" routerLink="/admin/dashboard" routerLinkActive="active">Dashboard</a>
+      <a class="btn btn-outline-light btn-sm" routerLink="/events" routerLinkActive="active">Events</a>
+      <a class="btn btn-outline-light btn-sm" routerLink="/admin/sessions" routerLinkActive="active">Sessions</a>
+      <a class="btn btn-outline-light btn-sm" routerLink="/admin/speakers" routerLinkActive="active">Speakers</a>
+      <a class="btn btn-outline-info  btn-sm" routerLink="/admin/speaker-assignments" routerLinkActive="active">Speaker Assignments</a>
+      <a class="btn btn-outline-light btn-sm" routerLink="/admin/participants" routerLinkActive="active">Participants</a>
+      <a class="btn btn-outline-light btn-sm" routerLink="/admin/categories" routerLinkActive="active">Categories</a>
+      <button class="btn btn-danger btn-sm" (click)="logout()">Logout</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Participant / Public Navbar (white) ── -->
+<nav *ngIf="!isAdmin" class="navbar navbar-light bg-white border-bottom shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold text-primary" routerLink="/events">🗓️ EMS</a>
+    <div class="d-flex flex-wrap gap-2 align-items-center">
+      <a class="btn btn-outline-secondary btn-sm" routerLink="/events">Home</a>
+      <a class="btn btn-outline-primary btn-sm"   routerLink="/events">Explore Events</a>
+
+      <ng-container *ngIf="isParticipant">
+        <span class="btn btn-outline-dark btn-sm disabled">👤 {{ userName }}</span>
+        <a class="btn btn-outline-secondary btn-sm" routerLink="/participant/dashboard">Dashboard</a>
+        <a class="btn btn-primary btn-sm"           routerLink="/my-events">My Events</a>
+        <button class="btn btn-outline-danger btn-sm" (click)="logout()">Logout</button>
+      </ng-container>
+
+      <ng-container *ngIf="!isLoggedIn">
+        <a class="btn btn-success btn-sm"  routerLink="/login">Login</a>
+        <a class="btn btn-warning btn-sm"  routerLink="/register">Register</a>
+        <a class="btn btn-dark btn-sm"     routerLink="/admin-login">⚙️ Admin</a>
+      </ng-container>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Page Content ── -->
+<div class="container mt-3 mb-5">
+  <router-outlet></router-outlet>
+</div>

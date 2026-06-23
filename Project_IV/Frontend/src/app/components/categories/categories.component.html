@@ -1,0 +1,80 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>🏷️ Manage Categories</h2>
+</div>
+
+<div *ngIf="successMsg" class="alert alert-success alert-dismissible fade show">
+  ✅ {{ successMsg }}<button type="button" class="btn-close" (click)="successMsg=''"></button>
+</div>
+<div *ngIf="errorMsg" class="alert alert-danger alert-dismissible fade show">
+  ❌ {{ errorMsg }}<button type="button" class="btn-close" (click)="errorMsg=''"></button>
+</div>
+
+<div class="row g-4">
+
+  <!-- Add Form -->
+  <div class="col-md-4">
+    <div class="card shadow-sm">
+      <div class="card-header fw-semibold">
+        ➕ Add Category
+      </div>
+      <div class="card-body">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Category Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" formControlName="categoryName"
+                   placeholder="e.g. Technology"
+                   [class.is-invalid]="form.get('categoryName')?.invalid && form.get('categoryName')?.touched">
+            <div class="invalid-feedback">Name is required (max 50 chars).</div>
+          </div>
+          <button type="submit" class="btn btn-primary w-100" [disabled]="submitting">
+            <span *ngIf="submitting" class="spinner-border spinner-border-sm me-1"></span>
+            Add Category
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- List — no ID column, clean table matching MVC -->
+  <div class="col-md-8">
+    <div class="card shadow-sm">
+      <div class="card-header fw-semibold">
+        All Categories ({{ categories.length }})
+      </div>
+      <div class="card-body p-0">
+        <div *ngIf="isLoading" class="text-center py-4">
+          <div class="spinner-border text-primary"></div>
+        </div>
+        <div *ngIf="!isLoading && categories.length === 0" class="text-center py-4 text-muted">
+          No categories yet.
+        </div>
+        <table *ngIf="!isLoading && categories.length > 0"
+               class="table table-bordered table-hover align-middle mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th>#</th>
+              <th>Category Name</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cat of categories; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ cat.categoryName }}</td>
+              <td>
+                <button class="btn btn-sm btn-danger"
+                        [disabled]="deletingId === cat.id"
+                        (click)="delete(cat.id, cat.categoryName)">
+                  <span *ngIf="deletingId === cat.id"
+                        class="spinner-border spinner-border-sm"></span>
+                  <span *ngIf="deletingId !== cat.id">Delete</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>

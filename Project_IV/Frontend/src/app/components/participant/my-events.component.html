@@ -1,0 +1,61 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="mb-0">📅 My Registered Events</h2>
+    <p class="text-muted mb-0">Registered events for <strong>{{ email }}</strong></p>
+  </div>
+  <a routerLink="/events" class="btn btn-outline-secondary btn-sm">← Back to Events</a>
+</div>
+
+<div *ngIf="successMsg" class="alert alert-success alert-dismissible fade show">
+  ✅ {{ successMsg }}<button type="button" class="btn-close" (click)="successMsg=''"></button>
+</div>
+<div *ngIf="errorMsg" class="alert alert-danger alert-dismissible fade show">
+  ❌ {{ errorMsg }}<button type="button" class="btn-close" (click)="errorMsg=''"></button>
+</div>
+
+<div *ngIf="isLoading" class="spinner-container">
+  <div class="spinner-border text-primary" style="width:3rem;height:3rem;"></div>
+</div>
+
+<div *ngIf="!isLoading && registrations.length === 0" class="alert alert-info">
+  <strong>No registered events yet.</strong>
+  <a routerLink="/events" class="alert-link">Browse events</a> to get started.
+</div>
+
+<div *ngIf="!isLoading && registrations.length > 0" class="row">
+  <div class="col-md-6 mb-4" *ngFor="let reg of registrations">
+    <div class="card h-100 shadow-sm" [class.border-success]="reg.isAttended">
+      <div class="card-header d-flex justify-content-between align-items-center py-2">
+        <span class="badge bg-primary">{{ reg.eventName }}</span>
+      </div>
+      <div class="card-body">
+        <h5 class="card-title mb-1">{{ reg.eventName }}</h5>
+        <span *ngIf="reg.isAttended" class="badge bg-success mb-2">✔ Attended</span>
+        <span *ngIf="!reg.isAttended" class="badge bg-warning text-dark mb-2">Not Attended</span>
+      </div>
+      <div class="card-footer d-flex gap-2 flex-wrap">
+        <a [routerLink]="['/events', reg.eventId]" class="btn btn-sm btn-outline-info flex-fill">
+          📋 View Sessions
+        </a>
+        <a [routerLink]="['/events', reg.eventId]" class="btn btn-sm btn-outline-secondary flex-fill">
+          🔍 Event Details
+        </a>
+        <ng-container *ngIf="!reg.isAttended">
+          <button class="btn btn-sm btn-success flex-fill"
+                  [disabled]="markingAttendance[reg.id]"
+                  (click)="markAttendance(reg.id, true)">
+            <span *ngIf="markingAttendance[reg.id]" class="spinner-border spinner-border-sm me-1"></span>
+            Mark as Attended
+          </button>
+        </ng-container>
+        <ng-container *ngIf="reg.isAttended">
+          <button class="btn btn-sm btn-outline-success flex-fill"
+                  [disabled]="markingAttendance[reg.id]"
+                  (click)="markAttendance(reg.id, false)">
+            ✔ Attended (Undo)
+          </button>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

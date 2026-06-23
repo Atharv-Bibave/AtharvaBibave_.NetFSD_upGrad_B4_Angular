@@ -1,0 +1,111 @@
+<!-- Category filter bar -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>{{ isAdmin ? 'Manage Events' : 'Upcoming Events' }}</h2>
+  <a *ngIf="isAdmin" routerLink="/admin/events/new" class="btn btn-primary">+ Add Event</a>
+  <a *ngIf="!isLoggedIn" routerLink="/events" class="btn btn-outline-primary btn-sm">Explore Events</a>
+</div>
+
+<div *ngIf="successMsg" class="alert alert-success alert-dismissible fade show">
+  ✅ {{ successMsg }}<button type="button" class="btn-close" (click)="successMsg=''"></button>
+</div>
+<div *ngIf="errorMsg" class="alert alert-danger alert-dismissible fade show">
+  ❌ {{ errorMsg }}<button type="button" class="btn-close" (click)="errorMsg=''"></button>
+</div>
+
+<!-- Loading -->
+<div *ngIf="isLoading" class="spinner-container">
+  <div class="spinner-border text-primary" style="width:3rem;height:3rem;"></div>
+</div>
+
+<!-- Admin table view -->
+<ng-container *ngIf="!isLoading && isAdmin">
+  <div *ngIf="events.length === 0" class="alert alert-info">
+    No events found. <a routerLink="/admin/events/new">Create your first event</a>.
+  </div>
+  <table *ngIf="events.length > 0" class="table table-bordered table-hover align-middle">
+    <thead class="table-dark">
+      <tr>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Date</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let ev of events">
+        <td>{{ ev.eventName }}</td>
+        <td>{{ ev.eventCategory }}</td>
+        <td>{{ ev.eventDate | date:'dd/MM/yyyy' }}</td>
+        <td>
+          <span class="badge" [class.bg-success]="ev.status==='Active'" [class.bg-secondary]="ev.status!=='Active'">
+            {{ ev.status }}
+          </span>
+        </td>
+        <td>
+          <div class="d-flex flex-wrap gap-1">
+            <a [routerLink]="['/events', ev.eventId]" class="btn btn-sm btn-outline-secondary">Details</a>
+            <a [routerLink]="['/admin/events/edit', ev.eventId]" class="btn btn-sm btn-warning">Edit</a>
+            <a [routerLink]="['/events', ev.eventId]" class="btn btn-sm btn-info">Sessions</a>
+            <button class="btn btn-sm btn-danger" (click)="deleteEvent(ev.eventId)">Delete</button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</ng-container>
+
+<!-- Public/Participant card view -->
+<ng-container *ngIf="!isLoading && !isAdmin">
+  <div *ngIf="events.length === 0" class="alert alert-info">
+    No active events at the moment. Please check back later.
+  </div>
+  <div *ngIf="events.length > 0" class="row">
+    <div class="col-md-4 mb-3" *ngFor="let ev of events">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <span class="badge bg-primary mb-2">{{ ev.eventCategory }}</span>
+          <h5 class="card-title">{{ ev.eventName }}</h5>
+          <p class="card-text text-muted small">📅 {{ ev.eventDate | date:'dd/MM/yyyy' }}</p>
+          <p class="card-text small">{{ ev.description }}</p>
+        </div>
+        <div class="card-footer d-flex flex-wrap gap-1">
+          <a [routerLink]="['/events', ev.eventId]" class="btn btn-outline-secondary btn-sm flex-fill">
+            🔍 Details
+          </a>
+          <a [routerLink]="['/events', ev.eventId]" class="btn btn-outline-info btn-sm flex-fill">
+            📋 Sessions
+          </a>
+          <ng-container *ngIf="isParticipant && ev.status === 'Active'">
+            <button class="btn btn-success btn-sm flex-fill"
+                    [disabled]="registering[ev.eventId]"
+                    (click)="registerForEvent(ev.eventId)">
+              <span *ngIf="registering[ev.eventId]" class="spinner-border spinner-border-sm me-1"></span>
+              ✅ Register
+            </button>
+          </ng-container>
+          <ng-container *ngIf="!isLoggedIn">
+            <a routerLink="/login" class="btn btn-outline-secondary btn-sm flex-fill">
+              🔒 Login to Register
+            </a>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<!-- Pagination -->
+<nav *ngIf="totalPages > 1" class="mt-4">
+  <ul class="pagination justify-content-center">
+    <li class="page-item" [class.disabled]="currentPage === 1">
+      <a class="page-link" (click)="changePage(currentPage-1)" style="cursor:pointer">Previous</a>
+    </li>
+    <li *ngFor="let p of pages()" class="page-item" [class.active]="p === currentPage">
+      <a class="page-link" (click)="changePage(p)" style="cursor:pointer">{{ p }}</a>
+    </li>
+    <li class="page-item" [class.disabled]="currentPage === totalPages">
+      <a class="page-link" (click)="changePage(currentPage+1)" style="cursor:pointer">Next</a>
+    </li>
+  </ul>
+</nav>

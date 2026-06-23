@@ -1,0 +1,159 @@
+<div class="page-header mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+  <div>
+    <h2 class="fw-bold mb-1"><i class="bi bi-person-check-fill me-2"></i>Attendance Management</h2>
+    <p class="mb-0 opacity-75">Select an event to view and manage participant attendance</p>
+  </div>
+  <a routerLink="/admin/dashboard" class="btn btn-outline-light btn-sm">
+    <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+  </a>
+</div>
+
+<!-- Alerts -->
+<div *ngIf="successMsg" class="alert alert-success alert-dismissible fade show">
+  <i class="bi bi-check-circle-fill me-2"></i>{{ successMsg }}
+  <button type="button" class="btn-close" (click)="successMsg=''"></button>
+</div>
+<div *ngIf="errorMsg" class="alert alert-danger alert-dismissible fade show">
+  <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ errorMsg }}
+  <button type="button" class="btn-close" (click)="errorMsg=''"></button>
+</div>
+
+<!-- Event Selector -->
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <div class="row align-items-end g-3">
+      <div class="col-md-8">
+        <label class="form-label fw-semibold">
+          <i class="bi bi-calendar-event me-1"></i>Select Event
+        </label>
+        <select class="form-select" [(ngModel)]="selectedEventId">
+          <option value="">-- Choose an event --</option>
+          <option *ngFor="let ev of events" [value]="ev.eventId">
+            {{ ev.eventName }} ({{ ev.eventDate | date:'mediumDate' }}) — {{ ev.status }}
+          </option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <button class="btn btn-primary w-100"
+                [disabled]="!selectedEventId || loadingRegs"
+                (click)="loadRegistrations()">
+          <span *ngIf="loadingRegs" class="spinner-border spinner-border-sm me-1"></span>
+          <i *ngIf="!loadingRegs" class="bi bi-search me-1"></i>
+          Load Registrations
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading -->
+<div *ngIf="loadingRegs" class="spinner-container">
+  <div class="spinner-border text-primary" style="width:3rem;height:3rem;"></div>
+</div>
+
+<!-- Results -->
+<ng-container *ngIf="!loadingRegs && registrations.length > 0">
+
+  <!-- Stats -->
+  <div class="row g-3 mb-4">
+    <div class="col-4">
+      <div class="card text-center border-0 shadow-sm">
+        <div class="card-body py-3">
+          <h3 class="fw-bold text-primary mb-0">{{ registrations.length }}</h3>
+          <p class="text-muted small mb-0">Total Registered</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="card text-center border-0 shadow-sm">
+        <div class="card-body py-3">
+          <h3 class="fw-bold text-success mb-0">{{ attendedCount }}</h3>
+          <p class="text-muted small mb-0">Attended</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="card text-center border-0 shadow-sm">
+        <div class="card-body py-3">
+          <h3 class="fw-bold text-warning mb-0">{{ pendingCount }}</h3>
+          <p class="text-muted small mb-0">Not Attended</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Registrations Table -->
+  <div class="card shadow-sm">
+    <div class="card-header fw-semibold d-flex justify-content-between align-items-center">
+      <span>
+        <i class="bi bi-list-check me-2"></i>
+        Registrations for <strong>{{ selectedEventName }}</strong>
+      </span>
+      <span class="badge bg-primary">{{ registrations.length }} participants</span>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>#</th>
+              <th>Participant Email</th>
+              <th>Registration ID</th>
+              <th class="text-center">Status</th>
+              <th class="text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let reg of registrations; let i = index">
+              <td class="text-muted">{{ i + 1 }}</td>
+              <td>
+                <i class="bi bi-person-circle me-2 text-primary"></i>
+                {{ reg.participantEmailId }}
+              </td>
+              <td class="small text-muted font-monospace">
+                {{ reg.id | slice:0:8 }}…
+              </td>
+              <td class="text-center">
+                <span *ngIf="reg.isAttended" class="badge bg-success">
+                  <i class="bi bi-check-circle me-1"></i>Attended
+                </span>
+                <span *ngIf="!reg.isAttended" class="badge bg-warning text-dark">
+                  <i class="bi bi-clock me-1"></i>Pending
+                </span>
+              </td>
+              <td class="text-center">
+                <!-- Mark as attended -->
+                <button *ngIf="!reg.isAttended"
+                        class="btn btn-sm btn-success me-1"
+                        [disabled]="markingId === reg.id"
+                        (click)="markAttendance(reg.id, true, reg.participantEmailId)">
+                  <span *ngIf="markingId === reg.id"
+                        class="spinner-border spinner-border-sm"></span>
+                  <i *ngIf="markingId !== reg.id" class="bi bi-check2-circle me-1"></i>
+                  Mark Attended
+                </button>
+                <!-- Undo attendance -->
+                <button *ngIf="reg.isAttended"
+                        class="btn btn-sm btn-outline-secondary"
+                        [disabled]="markingId === reg.id"
+                        (click)="markAttendance(reg.id, false, reg.participantEmailId)">
+                  <span *ngIf="markingId === reg.id"
+                        class="spinner-border spinner-border-sm"></span>
+                  <i *ngIf="markingId !== reg.id" class="bi bi-x-circle me-1"></i>
+                  Undo
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<!-- Empty state after load -->
+<div *ngIf="!loadingRegs && selectedEventId && registrations.length === 0 && !errorMsg"
+     class="text-center py-5">
+  <i class="bi bi-people text-muted" style="font-size:4rem"></i>
+  <p class="text-muted mt-3">No participants registered for this event yet.</p>
+</div>

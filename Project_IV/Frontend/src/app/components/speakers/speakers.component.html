@@ -1,0 +1,74 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Manage Speakers</h2>
+  <div class="d-flex gap-2">
+    <button class="btn btn-primary"
+            (click)="showForm = !showForm">
+      {{ showForm ? '✕ Cancel' : '+ Add Speaker' }}
+    </button>
+    <a routerLink="/admin/speaker-assignments" class="btn btn-outline-info">
+      Speaker Assignments
+    </a>
+  </div>
+</div>
+
+<div *ngIf="successMsg" class="alert alert-success alert-dismissible fade show">
+  ✅ {{ successMsg }}<button type="button" class="btn-close" (click)="successMsg=''"></button>
+</div>
+<div *ngIf="errorMsg" class="alert alert-danger alert-dismissible fade show">
+  ❌ {{ errorMsg }}<button type="button" class="btn-close" (click)="errorMsg=''"></button>
+</div>
+
+<!-- Inline Add Form -->
+<div *ngIf="showForm" class="card mb-3 border-primary">
+  <div class="card-body">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="row g-3 align-items-end">
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Speaker Name <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" formControlName="speakerName"
+               placeholder="Full name"
+               [class.is-invalid]="form.get('speakerName')?.invalid && form.get('speakerName')?.touched">
+        <div class="invalid-feedback">Name is required (max 50 chars).</div>
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-success" [disabled]="submitting">
+          <span *ngIf="submitting" class="spinner-border spinner-border-sm me-1"></span>
+          Add Speaker
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div *ngIf="isLoading" class="spinner-container">
+  <div class="spinner-border text-primary"></div>
+</div>
+
+<div *ngIf="!isLoading && speakers.length === 0" class="alert alert-info">
+  No speakers found. Use "+ Add Speaker" above to add one.
+</div>
+
+<table *ngIf="!isLoading && speakers.length > 0"
+       class="table table-bordered table-hover align-middle">
+  <thead class="table-dark">
+    <tr>
+      <th>#</th>
+      <th>Speaker Name</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let sp of speakers; let i = index">
+      <td>{{ i + 1 }}</td>
+      <td>{{ sp.speakerName }}</td>
+      <td>
+        <button class="btn btn-sm btn-danger"
+                [disabled]="deletingId === sp.speakerId"
+                (click)="delete(sp.speakerId, sp.speakerName)">
+          <span *ngIf="deletingId === sp.speakerId"
+                class="spinner-border spinner-border-sm"></span>
+          <span *ngIf="deletingId !== sp.speakerId">Delete</span>
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>

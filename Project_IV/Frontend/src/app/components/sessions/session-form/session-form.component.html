@@ -1,0 +1,91 @@
+<div class="row">
+  <div class="col-md-6">
+
+    <h2>{{ isEditMode ? 'Edit Session' : 'Add Session' }}</h2>
+
+    <div *ngIf="loading" class="spinner-container">
+      <div class="spinner-border text-primary"></div>
+    </div>
+
+    <ng-container *ngIf="!loading">
+
+      <div *ngIf="errorMsg" class="alert alert-danger">❌ {{ errorMsg }}</div>
+
+      <div *ngIf="form.errors?.['dateRange'] && form.touched" class="alert alert-warning">
+        Session End must be after Session Start.
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+        <!-- Event -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Event <span class="text-danger">*</span></label>
+          <select class="form-select" formControlName="eventId"
+                  [class.is-invalid]="f('eventId')?.invalid && f('eventId')?.touched">
+            <option value="">-- Select Event --</option>
+            <option *ngFor="let ev of events" [value]="ev.eventId">{{ ev.eventName }}</option>
+          </select>
+          <div class="invalid-feedback">Please select an event.</div>
+          <div *ngIf="isEditMode" class="form-text text-muted small">
+            ℹ️ Session date must be on or after the event date.
+          </div>
+        </div>
+
+        <!-- Session Title -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Session Title <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" formControlName="sessionTitle"
+                 [class.is-invalid]="f('sessionTitle')?.invalid && f('sessionTitle')?.touched">
+          <div class="invalid-feedback">Session title required (max 50 chars).</div>
+        </div>
+
+        <!-- Speaker -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Speaker <span class="text-muted small">(Optional)</span></label>
+          <select class="form-select" formControlName="speakerId">
+            <option value="">-- No Speaker --</option>
+            <option *ngFor="let sp of speakers" [value]="sp.speakerId">{{ sp.speakerName }}</option>
+          </select>
+        </div>
+
+        <!-- Start / End -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Session Start <span class="text-danger">*</span></label>
+          <input type="datetime-local" class="form-control" formControlName="sessionStart"
+                 [class.is-invalid]="f('sessionStart')?.invalid && f('sessionStart')?.touched">
+          <div class="invalid-feedback">Start time is required.</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Session End <span class="text-danger">*</span></label>
+          <input type="datetime-local" class="form-control" formControlName="sessionEnd"
+                 [class.is-invalid]="f('sessionEnd')?.invalid && f('sessionEnd')?.touched">
+          <div class="invalid-feedback">End time is required.</div>
+        </div>
+
+        <!-- URL -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Session URL <span class="text-muted small">(optional)</span></label>
+          <input type="url" class="form-control" formControlName="sessionUrl"
+                 placeholder="https://zoom.us/j/..."
+                 [class.is-invalid]="f('sessionUrl')?.invalid && f('sessionUrl')?.touched">
+          <div class="invalid-feedback">Must be a valid URL.</div>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Description</label>
+          <textarea class="form-control" formControlName="description" rows="2"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary" [disabled]="submitting">
+          <span *ngIf="submitting" class="spinner-border spinner-border-sm me-1"></span>
+          {{ isEditMode ? 'Update Session' : 'Add Session' }}
+        </button>
+        <a routerLink="/admin/sessions" class="btn btn-secondary ms-2">Cancel</a>
+
+      </form>
+    </ng-container>
+
+  </div>
+</div>

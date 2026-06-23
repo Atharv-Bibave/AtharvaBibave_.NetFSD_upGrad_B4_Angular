@@ -1,0 +1,95 @@
+<div class="mb-4">
+  <h2 class="mb-0">👋 Welcome back, <strong>{{ userName }}</strong></h2>
+  <p class="text-muted">Here's a summary of your activity on EMS.</p>
+</div>
+
+<div *ngIf="isLoading" class="spinner-container">
+  <div class="spinner-border text-primary" style="width:3rem;height:3rem;"></div>
+</div>
+
+<ng-container *ngIf="!isLoading">
+
+  <!-- Stat cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-4">
+      <div class="card text-white bg-primary h-100">
+        <div class="card-body text-center">
+          <div class="fs-2 fw-bold">{{ totalEvents }}</div>
+          <div class="small">Registered Events</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-4">
+      <div class="card text-white bg-success h-100">
+        <div class="card-body text-center">
+          <div class="fs-2 fw-bold">{{ attended }}</div>
+          <div class="small">Attended</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-4">
+      <div class="card text-white bg-info h-100">
+        <div class="card-body text-center">
+          <div class="fs-2 fw-bold">{{ upcoming }}</div>
+          <div class="small">Upcoming</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick action cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="card h-100 border-primary">
+        <div class="card-body">
+          <h5 class="card-title">📅 My Registered Events</h5>
+          <p class="card-text text-muted small">
+            View all events you've registered for, check attendance, and browse event sessions.
+          </p>
+          <a routerLink="/my-events" class="btn btn-primary btn-sm">View Registered Events</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 border-success">
+        <div class="card-body">
+          <h5 class="card-title">🔍 Browse Events</h5>
+          <p class="card-text text-muted small">
+            Explore new events and sessions available on the platform and register for more.
+          </p>
+          <a routerLink="/events" class="btn btn-success btn-sm">Browse Events</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent registrations -->
+  <ng-container *ngIf="registrations.length > 0">
+    <h5 class="mb-3 text-muted">Recent Registrations</h5>
+    <div class="list-group mb-3">
+      <div *ngFor="let item of recent"
+           class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <strong>{{ item.eventName }}</strong>
+          <div class="text-muted small">Registration ID: {{ item.id | slice:0:8 }}...</div>
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+          <span *ngIf="item.isAttended" class="badge bg-success">✔ Attended</span>
+          <span *ngIf="!item.isAttended" class="badge bg-warning text-dark">Upcoming</span>
+          <a [routerLink]="['/events', item.eventId]"
+             class="btn btn-sm btn-outline-secondary">Sessions</a>
+        </div>
+      </div>
+    </div>
+    <a *ngIf="totalEvents > 3" routerLink="/my-events"
+       class="btn btn-outline-primary btn-sm">
+      View all {{ totalEvents }} registered events →
+    </a>
+  </ng-container>
+
+  <div *ngIf="registrations.length === 0" class="alert alert-info">
+    You haven't registered for any events yet.
+    <a routerLink="/events" class="alert-link">Browse events</a> to get started.
+  </div>
+
+</ng-container>

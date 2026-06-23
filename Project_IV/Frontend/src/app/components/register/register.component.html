@@ -1,0 +1,50 @@
+<div class="row justify-content-center mt-5">
+  <div class="col-md-5">
+    <div class="text-center mb-3">
+      <a routerLink="/login" class="text-muted small">← Back to Sign In</a>
+    </div>
+    <div class="card shadow">
+      <div class="card-header bg-warning text-dark text-center">
+        <h5 class="mb-0">📝 Create Your EMS Account</h5>
+        <small class="opacity-75">upGrad Virtual Event Management System</small>
+      </div>
+      <div class="card-body">
+        <div *ngIf="errorMsg" class="alert alert-danger py-2">{{ errorMsg }}</div>
+        <div *ngIf="successMsg" class="alert alert-success py-2">✅ {{ successMsg }}</div>
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Email Address <span class="text-danger">*</span></label>
+            <input type="email" class="form-control" formControlName="emailId"
+                   placeholder="your&#64;email.com"
+                   [class.is-invalid]="f('emailId')?.invalid && f('emailId')?.touched">
+            <div class="invalid-feedback">Enter a valid email.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" formControlName="userName"
+                   placeholder="Your full name"
+                   [class.is-invalid]="f('userName')?.invalid && f('userName')?.touched">
+            <div class="invalid-feedback">Name is required.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Password <span class="text-danger">*</span></label>
+            <input type="password" class="form-control" formControlName="password"
+                   placeholder="6–20 characters"
+                   [class.is-invalid]="f('password')?.invalid && f('password')?.touched">
+            <div class="invalid-feedback">
+              <span *ngIf="f('password')?.errors?.['minlength']">Min 6 characters.</span>
+              <span *ngIf="f('password')?.errors?.['passwordStrength']">Must include uppercase and special character.</span>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-warning w-100 fw-bold" [disabled]="loading">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm me-1"></span>
+            Register
+          </button>
+        </form>
+        <p class="mt-3 text-center text-muted small">
+          Already have an account? <a routerLink="/login">Login here</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

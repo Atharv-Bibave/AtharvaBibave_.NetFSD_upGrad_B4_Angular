@@ -1,0 +1,19 @@
+<div *ngIf="isLoading" class="text-center py-3">
+  <div class="spinner-border spinner-border-sm text-primary"></div>
+</div>
+
+<div *ngIf="!isLoading && sessions.length === 0" class="text-muted small">
+  No sessions for this event.
+</div>
+
+<div class="list-group" *ngIf="sessions.length > 0">
+  <div class="list-group-item" *ngFor="let s of sessions">
+    <div class="d-flex justify-content-between">
+      <div>
+        <h6 class="mb-1 fw-bold">{{ s.sessionTitle }}</h6>
+        <small class="text-muted">{{ s.sessionStart | date:'medium' }} — {{ s.sessionEnd | date:'shortTime' }}</small>
+        <span *ngIf="s.speakerName" class="badge bg-secondary ms-2">{{ s.speakerName }}</span>
+      </div>
+    </div>
+  </div>
+</div>

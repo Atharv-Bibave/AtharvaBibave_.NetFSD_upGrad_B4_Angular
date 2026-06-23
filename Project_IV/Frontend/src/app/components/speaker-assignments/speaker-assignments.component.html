@@ -1,0 +1,97 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2>🎤 Speaker Assignments</h2>
+  <div class="d-flex gap-2">
+    <a routerLink="/admin/speakers" class="btn btn-success btn-sm">+ Add Speaker</a>
+    <a routerLink="/admin/dashboard" class="btn btn-outline-secondary btn-sm">← Dashboard</a>
+  </div>
+</div>
+
+<div *ngIf="errorMsg" class="alert alert-danger">❌ {{ errorMsg }}</div>
+<div *ngIf="successMsg" class="alert alert-success alert-dismissible fade show">
+  ✅ {{ successMsg }}<button type="button" class="btn-close" (click)="successMsg=''"></button>
+</div>
+
+<div *ngIf="isLoading" class="spinner-container">
+  <div class="spinner-border text-primary" style="width:3rem;height:3rem;"></div>
+</div>
+
+<ng-container *ngIf="!isLoading">
+
+  <div *ngIf="speakerAssignments.length === 0" class="alert alert-info">
+    No speakers found. <a routerLink="/admin/speakers">Add a speaker</a> to get started.
+  </div>
+
+  <!-- Speaker cards -->
+  <div *ngFor="let item of speakerAssignments" class="card mb-3 shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <div>
+        <strong class="me-2">🎤 {{ item.speaker.speakerName }}</strong>
+        <span class="badge bg-info text-dark">{{ item.sessions.length }} session(s)</span>
+      </div>
+      <div class="d-flex gap-2">
+        <a [routerLink]="['/admin/speakers']" class="btn btn-sm btn-outline-danger">Remove</a>
+      </div>
+    </div>
+
+    <div *ngIf="item.sessions.length > 0" class="card-body p-0">
+      <table class="table table-sm table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th class="ps-3">Session</th>
+            <th>Event</th>
+            <th>Start</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let s of item.sessions">
+            <td class="ps-3">{{ s.sessionTitle }}</td>
+            <td class="small">{{ s.eventId }}</td>
+            <td class="small">{{ s.sessionStart | date:'dd MMM, HH:mm' }}</td>
+            <td>
+              <a [routerLink]="['/admin/sessions/edit', s.sessionId]"
+                 class="btn btn-sm btn-outline-secondary"
+                 style="font-size:0.75rem;padding:2px 8px;">Reassign</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="item.sessions.length === 0" class="card-body text-muted small fst-italic py-2 ps-3">
+      No sessions assigned to this speaker yet.
+    </div>
+  </div>
+
+  <!-- Unassigned Sessions -->
+  <div *ngIf="unassignedSessions.length > 0" class="card border-warning mt-4 shadow-sm">
+    <div class="card-header bg-warning text-dark">
+      <strong>⚠️ Unassigned Sessions ({{ unassignedSessions.length }})</strong>
+    </div>
+    <div class="card-body p-0">
+      <table class="table table-sm table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th class="ps-3">Session</th>
+            <th>Event</th>
+            <th>Start</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let s of unassignedSessions">
+            <td class="ps-3">{{ s.sessionTitle }}</td>
+            <td class="small">{{ s.eventId }}</td>
+            <td class="small">{{ s.sessionStart | date:'dd MMM, HH:mm' }}</td>
+            <td>
+              <a [routerLink]="['/admin/sessions/edit', s.sessionId]"
+                 class="btn btn-sm btn-outline-primary"
+                 style="font-size:0.75rem;padding:2px 8px;">Assign Speaker</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</ng-container>
